@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Labor Economy Simulation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Post-Labor Economy Simulation</h1>
+            <p class="header-subtitle">Explore potential outcomes as AI and robotics transform the workforce</p>
+        </header>
+
+        <!-- Scenario Selection -->
+        <section class="scenario-section">
+            <h2>Select a Scenario</h2>
+            <div class="scenario-grid">
+                <button class="scenario-btn active" data-scenario="0">
+                    <h3>Gradual Adaptation</h3>
+                    <p>Slow, managed transition with retraining programs</p>
+                </button>
+                <button class="scenario-btn" data-scenario="1">
+                    <h3>Rapid Displacement</h3>
+                    <p>Fast automation with limited adaptation</p>
+                </button>
+                <button class="scenario-btn" data-scenario="2">
+                    <h3>Post-Scarcity Abundance</h3>
+                    <p>Technology creates material abundance for all</p>
+                </button>
+                <button class="scenario-btn" data-scenario="3">
+                    <h3>Concentrated Ownership</h3>
+                    <p>Wealth concentrates among tech/capital owners</p>
+                </button>
+                <button class="scenario-btn" data-scenario="4">
+                    <h3>Universal Basic Income</h3>
+                    <p>Government provides basic income for displaced workers</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- Key Metrics -->
+        <section class="metrics-section">
+            <h2>Key Economic Indicators</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">📈</div>
+                    <h3>GDP Growth Rate</h3>
+                    <div class="metric-value" id="gdp-value">2.5%</div>
+                    <p>Annual economic growth</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <h3>Unemployment Rate</h3>
+                    <div class="metric-value" id="unemployment-value">8%</div>
+                    <p>Percentage of workforce unemployed</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚖️</div>
+                    <h3>Wealth Inequality</h3>
+                    <div class="metric-value" id="gini-value">0.45</div>
+                    <p>Gini coefficient (0=equal, 1=unequal)</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚡</div>
+                    <h3>Jobs Displaced</h3>
+                    <div class="metric-value" id="displaced-value">50M</div>
+                    <p>Jobs lost to automation</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">✨</div>
+                    <h3>New Jobs Created</h3>
+                    <div class="metric-value" id="new-jobs-value">45M</div>
+                    <p>New job opportunities</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🚀</div>
+                    <h3>Productivity Growth</h3>
+                    <div class="metric-value" id="productivity-value">1.5%</div>
+                    <p>Annual productivity increase</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parameter Controls -->
+        <section class="controls-section">
+            <h2>Adjust Parameters</h2>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="automation-speed">Automation Speed</label>
+                    <input type="range" id="automation-speed" min="0" max="100" value="50" class="slider">
+                    <div class="slider-labels">
+                        <span>Slow</span>
+                        <span>Rapid</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="govt-response">Government Response</label>
+                    <input type="range" id="govt-response" min="0" max="100" value="50" class="slider">
+                    <div class="slider-labels">
+                        <span>Laissez-faire</span>
+                        <span>Interventionist</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="tech-distribution">Technology Distribution</label>
+                    <input type="range" id="tech-distribution" min="0" max="100" value="50" class="slider">
+                    <div class="slider-labels">
+                        <span>Concentrated</span>
+                        <span>Democratized</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="retraining-investment">Retraining Investment</label>
+                    <input type="range" id="retraining-investment" min="0" max="100" value="50" class="slider">
+                    <div class="slider-labels">
+                        <span>Low</span>
+                        <span>High</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="agi-timeline">AGI/ASI Achievement</label>
+                    <input type="range" id="agi-timeline" min="2026" max="2040" value="2030" class="slider">
+                    <div class="slider-labels">
+                        <span>2026</span>
+                        <span>2040</span>
+                    </div>
+                    <div class="slider-value" id="agi-year-display">2030</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualizations -->
+        <section class="charts-section">
+            <h2>Economic Impact Visualization</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Sector Automation Risk</h3>
+                    <canvas id="sector-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Wealth Distribution</h3>
+                    <canvas id="wealth-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Employment Timeline</h3>
+                    <canvas id="timeline-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>GDP vs Unemployment</h3>
+                    <canvas id="gdp-unemployment-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Wealth Inequality Trends</h3>
+                    <canvas id="inequality-trends-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Outcome Summary -->
+        <section class="outcome-section">
+            <h2>Outcome Assessment</h2>
+            <div class="outcome-grid">
+                <div class="outcome-card">
+                    <h3>Social Stability Index</h3>
+                    <div class="outcome-value" id="stability-value">7.2</div>
+                    <div class="outcome-bar">
+                        <div class="outcome-fill" id="stability-bar" style="width: 72%"></div>
+                    </div>
+                </div>
+                <div class="outcome-card">
+                    <h3>Economic Prosperity Score</h3>
+                    <div class="outcome-value" id="prosperity-value">6.5</div>
+                    <div class="outcome-bar">
+                        <div class="outcome-fill" id="prosperity-bar" style="width: 65%"></div>
+                    </div>
+                </div>
+                <div class="outcome-card">
+                    <h3>Innovation Index</h3>
+                    <div class="outcome-value" id="innovation-value">8.1</div>
+                    <div class="outcome-bar">
+                        <div class="outcome-fill" id="innovation-bar" style="width: 81%"></div>
+                    </div>
+                </div>
+                <div class="outcome-card">
+                    <h3>Quality of Life Rating</h3>
+                    <div class="outcome-value" id="quality-value">7.8</div>
+                    <div class="outcome-bar">
+                        <div class="outcome-fill" id="quality-bar" style="width: 78%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
