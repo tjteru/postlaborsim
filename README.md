@@ -100,7 +100,13 @@ f(t) = baseline / (1 + e^(-0.2(t - t₀)))
    npm install
    npm run dev
    ```
-4. Or for the legacy static build, serve via a local HTTP server:
+4. Install backend dependencies and start the API server:
+   ```bash
+   cd ../backend
+   npm install
+   npm start
+   ```
+5. Or for the legacy static build, serve via a local HTTP server:
    ```bash
    # Python 3
    python -m http.server 8000
@@ -110,6 +116,12 @@ f(t) = baseline / (1 + e^(-0.2(t - t₀)))
 
    # VS Code Live Server extension
    ```
+
+### Environment Variables
+
+- `GEMINI_API_KEY` – API key for the Gemini model used by the backend.
+- `PORT` – optional port for the backend server (default `3000`).
+- `VITE_SOCKET_URL` – URL of the backend socket server for the frontend.
 
 ### Usage
 1. **Select a Scenario**: Choose from five economic transition models
@@ -153,6 +165,33 @@ This project is designed for educational and research purposes. Contributions we
 - Update `CLAUDE.md` for AI assistant compatibility
 - Test across multiple browsers and devices
 - Validate economic calculations against research
+
+### Testing
+
+Run the backend test suite with:
+
+```bash
+npm test --prefix backend
+```
+
+This executes Jest unit tests covering the simulation engine, API routes and the LLM service.
+
+### Deployment
+
+Both the backend and frontend can be deployed to any Node.js hosting provider.
+For example, to deploy the backend to Google Cloud Run:
+
+```bash
+gcloud builds submit --tag gcr.io/<project>/postlaborsim-backend
+gcloud run deploy postlaborsim-backend --image gcr.io/<project>/postlaborsim-backend --platform managed --allow-unauthenticated
+```
+
+For the React frontend, build the project and deploy the `dist` directory with your provider (e.g. Vercel or Firebase Hosting):
+
+```bash
+cd frontend
+npm run build
+```
 
 ## 📚 Research Foundation
 
