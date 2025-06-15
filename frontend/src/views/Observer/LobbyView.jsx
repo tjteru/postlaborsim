@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useSocket } from '../../context/SocketProvider';
 
 const LobbyView = ({ gameId }) => {
@@ -22,7 +22,7 @@ const LobbyView = ({ gameId }) => {
   return (
     <div>
       <h2>Lobby</h2>
-      <QRCode value={joinUrl} />
+      <QRCodeSVG value={joinUrl} />
       <h3>Connected Players</h3>
       <ul>
         {players.map((p, i) => (

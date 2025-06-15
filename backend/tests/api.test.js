@@ -1,3 +1,10 @@
+jest.mock('../services/llmService', () => ({
+  generateEcosystem: jest.fn().mockResolvedValue([]),
+  generateCompanyDetails: jest.fn().mockResolvedValue({}),
+  generateAIOpportunity: jest.fn().mockResolvedValue({}),
+  generateNewsUpdate: jest.fn().mockResolvedValue('')
+}));
+
 const request = require('supertest');
 const { app, server } = require('../server');
 

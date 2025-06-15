@@ -1,3 +1,10 @@
+jest.mock('../services/llmService', () => ({
+  generateEcosystem: jest.fn().mockResolvedValue([]),
+  generateCompanyDetails: jest.fn().mockResolvedValue({}),
+  generateAIOpportunity: jest.fn().mockResolvedValue({}),
+  generateNewsUpdate: jest.fn().mockResolvedValue('')
+}));
+
 const firestore = require('../services/firestoreService');
 
 describe('firestoreService', () => {
