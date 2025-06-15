@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import LobbyView from './LobbyView';
 import MacroDashboard from './MacroDashboard';
 import NewsFeed from './NewsFeed';
+import CompanyDetails from '../../components/CompanyDetails';
 import { useSocket } from '../../context/SocketProvider';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3100';
@@ -14,6 +15,7 @@ const ObserverView = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   // Use default game ID if none provided in URL
   const currentGameId = gameId || 'game_1';
@@ -22,30 +24,24 @@ const ObserverView = () => {
   useEffect(() => {
     const fetchGameState = async () => {
       try {
-        console.log('Observer: Fetching game state for', currentGameId);
         setLoading(true);
         setError(null);
         const response = await fetch(`${API_URL}/api/game/${currentGameId}/state`);
-        console.log('Observer: API response status:', response.status);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('Observer: Game data received:', data);
           if (data && !data.error) {
             setState(data);
           } else {
-            console.log('Observer: Data has error or is empty');
             setError('Game not found or not started');
           }
         } else {
-          console.log('Observer: API response not ok');
           setError('Failed to load game - response not ok');
         }
       } catch (err) {
         console.error('Observer: Failed to load initial game state:', err);
         setError('Failed to load game state');
       } finally {
-        console.log('Observer: Setting loading to false');
         setLoading(false);
       }
     };
@@ -72,10 +68,7 @@ const ObserverView = () => {
     };
   }, [socket, currentGameId]);
 
-  console.log('Observer render:', { loading, error, state, currentGameId });
-
   if (loading) {
-    console.log('Observer: Rendering loading state');
     return (
       <div style={{ 
         display: 'flex', 
@@ -91,7 +84,6 @@ const ObserverView = () => {
   }
 
   if (error) {
-    console.log('Observer: Rendering error state:', error);
     return (
       <div style={{ 
         padding: 'var(--spacing-lg)', 
@@ -116,10 +108,6 @@ const ObserverView = () => {
     });
   }
 
-  console.log('Observer: Rendering main content with state:', state);
-  console.log('Observer: Companies available:', state.companies?.length || 0);
-  console.log('Observer: Economic data:', economicData);
-
   return (
     <div style={{ padding: 'var(--spacing-lg)' }}>
       <h1 style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)', color: 'var(--color-text-primary)' }}>
@@ -136,22 +124,115 @@ const ObserverView = () => {
       
       {state.companies && state.companies.length > 0 && (
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <h2>Companies in Game</h2>
-          <div style={{ display: 'grid', gap: 'var(--spacing-md)', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+          <h2 style={{ color: 'var(--color-text-primary)', marginBottom: 'var(--spacing-lg)' }}>
+            Companies in Game ({state.companies.length})
+          </h2>
+          <div style={{ display: 'grid', gap: 'var(--spacing-lg)', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
             {state.companies.map((company, index) => (
               <div key={index} style={{
-                padding: 'var(--spacing-md)',
+                padding: 'var(--spacing-lg)',
                 backgroundColor: 'var(--color-background-alt)',
                 border: '1px solid var(--color-border)',
-                borderRadius: 'var(--border-radius-md)'
+                borderRadius: 'var(--border-radius-lg)',
+                transition: 'transform var(--transition-base), box-shadow var(--transition-base)',
+                cursor: 'pointer'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
               }}>
-                <h3 style={{ margin: '0 0 var(--spacing-sm) 0' }}>{company.name}</h3>
-                <p style={{ margin: '0 0 var(--spacing-sm) 0', color: 'var(--color-text-secondary)' }}>
-                  {company.industry}
-                </p>
-                <p style={{ margin: 0, fontSize: 'var(--font-size-sm)' }}>
-                  Employees: {company.employees ? company.employees.length : 0}
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--spacing-md)' }}>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: '0 0 var(--spacing-xs) 0', color: 'var(--color-text-primary)' }}>
+                      {company.name}
+                    </h3>
+                    <p style={{ margin: '0 0 var(--spacing-sm) 0', color: 'var(--color-text-secondary)' }}>
+                      {company.type}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedCompany(company)}
+                    style={{
+                      padding: 'var(--spacing-xs) var(--spacing-sm)',
+                      backgroundColor: 'var(--color-primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 'var(--border-radius-sm)',
+                      cursor: 'pointer',
+                      fontSize: 'var(--font-size-xs)',
+                      fontWeight: '600',
+                      transition: 'background-color var(--transition-base)'
+                    }}
+                    onMouseOver={(e) => {
+                      e.stopPropagation();
+                      e.target.style.backgroundColor = 'var(--color-primary-hover)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.stopPropagation();
+                      e.target.style.backgroundColor = 'var(--color-primary)';
+                    }}
+                  >
+                    📖 Details
+                  </button>
+                </div>
+                
+                <div style={{ display: 'grid', gap: 'var(--spacing-sm)', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ margin: '0 0 var(--spacing-xs) 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                      Employees
+                    </p>
+                    <p style={{ margin: 0, fontSize: 'var(--font-size-base)', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>
+                      {company.details?.employees?.length || company.employees?.length || 0}
+                    </p>
+                  </div>
+                  
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ margin: '0 0 var(--spacing-xs) 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                      Type
+                    </p>
+                    <p style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>
+                      {company.ownership?.replace('_', ' ').toUpperCase() || 'Business'}
+                    </p>
+                  </div>
+                  
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ margin: '0 0 var(--spacing-xs) 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                      Founded
+                    </p>
+                    <p style={{ margin: 0, fontSize: 'var(--font-size-base)', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>
+                      {company.details?.backstory?.establishmentYear || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
+                {company.details?.backstory?.originStory && (
+                  <div style={{ marginTop: 'var(--spacing-md)', paddingTop: 'var(--spacing-sm)', borderTop: '1px solid var(--color-border)' }}>
+                    <p style={{ 
+                      margin: 0, 
+                      fontSize: 'var(--font-size-sm)', 
+                      color: 'var(--color-text-secondary)',
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      lineHeight: 1.4
+                    }}>
+                      {company.details.backstory.originStory}
+                    </p>
+                    <p style={{ 
+                      margin: 'var(--spacing-xs) 0 0 0', 
+                      fontSize: 'var(--font-size-xs)', 
+                      color: 'var(--color-primary)',
+                      fontWeight: '600'
+                    }}>
+                      Click for full story →
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -159,6 +240,13 @@ const ObserverView = () => {
       )}
       
       <NewsFeed news={news} />
+      
+      {selectedCompany && (
+        <CompanyDetails 
+          company={selectedCompany} 
+          onClose={() => setSelectedCompany(null)} 
+        />
+      )}
     </div>
   );
 };
