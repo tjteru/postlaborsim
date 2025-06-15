@@ -94,14 +94,20 @@ f(t) = baseline / (1 + e^(-0.2(t - t₀)))
 ### Installation
 1. Clone or download the repository
 2. Open `index.html` in a web browser
-3. For development, serve via local HTTP server:
+3. Install frontend dependencies and start the React dev server:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+4. Or for the legacy static build, serve via a local HTTP server:
    ```bash
    # Python 3
    python -m http.server 8000
-   
+
    # Node.js
    npx serve .
-   
+
    # VS Code Live Server extension
    ```
 
