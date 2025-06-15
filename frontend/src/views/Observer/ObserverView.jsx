@@ -8,7 +8,7 @@ const ObserverView = () => {
   const socket = useSocket();
   const [state, setState] = useState({ history: [] });
   const [news, setNews] = useState([]);
-  const [gameId, setGameId] = useState('game_1');
+  const [gameId] = useState('game_1');
 
   useEffect(() => {
     if (!socket) return;
