@@ -1,10 +1,54 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const config = require('../config/environment');
 
-const apiKey = process.env.GEMINI_API_KEY || '';
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const apiKey = config.GEMINI_API_KEY || '';
+let useMock = config.USE_MOCK_LLM || !apiKey;
+
+let genAI, model;
+if (!useMock && apiKey) {
+    try {
+        genAI = new GoogleGenerativeAI(apiKey);
+        model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); // Updated model name
+        console.log('Using real Gemini AI service');
+    } catch (error) {
+        console.warn('Failed to initialize Gemini AI, falling back to mock mode:', error.message);
+        useMock = true;
+    }
+} else {
+    console.log('Using mock LLM service (no API key provided)');
+}
 
 async function callModel(prompt) {
+    if (useMock) {
+        // Return mock responses based on prompt keywords
+        if (prompt.includes('interconnected businesses')) {
+            return JSON.stringify([
+                { name: "TechFlow Solutions", type: "software" },
+                { name: "GreenLeaf Farms", type: "agriculture" },
+                { name: "Urban Logistics", type: "transportation" }
+            ]);
+        } else if (prompt.includes('detailed profile')) {
+            return JSON.stringify({
+                name: "Mock Company",
+                cash: 50000,
+                revenue: 25000,
+                employees: [
+                    { name: "Alex Chen", role: "Developer", salary: 75000 },
+                    { name: "Sam Rivera", role: "Designer", salary: 65000 }
+                ],
+                backstory: "A growing technology company focused on automation solutions."
+            });
+        } else if (prompt.includes('AI-driven opportunity')) {
+            return JSON.stringify({
+                title: "Process Automation",
+                description: "Implement AI-powered workflow automation to reduce manual tasks by 30%."
+            });
+        } else if (prompt.includes('news update')) {
+            return "Economic activity continues with steady growth across key sectors. Companies are adapting to new market conditions.";
+        }
+        return "Mock response";
+    }
+    
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();

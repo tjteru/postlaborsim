@@ -1,0 +1,43 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: postlaborsim-backend
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/execution-environment: gen2
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "true"
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      containerConcurrency: 100
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/PROJECT_ID/postlaborsim-backend:latest
+        ports:
+        - containerPort: 3100
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3100"
+        - name: FIREBASE_PROJECT_ID
+          value: "PROJECT_ID"
+        - name: USE_REAL_FIRESTORE
+          value: "true"
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: gemini-api-key
+              name: api-secrets
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi

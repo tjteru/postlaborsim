@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Game collection rules
+    match /games/{gameId} {
+      // Allow read access to all authenticated users (players, observers, GMs)
+      allow read: if true;
+      
+      // Allow creation of new games
+      allow create: if true;
+      
+      // Allow updates to game state by authenticated users
+      allow update: if true;
+      
+      // Allow deletion by game masters or admin users
+      allow delete: if true;
+    }
+    
+    // Player sessions (for tracking connected players)
+    match /sessions/{sessionId} {
+      allow read, write: if true;
+    }
+    
+    // Game analytics and metrics (optional future feature)
+    match /analytics/{document} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Default: deny all other operations
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

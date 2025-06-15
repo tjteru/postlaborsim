@@ -1,0 +1,54 @@
+.macro-dashboard {
+  background-color: var(--color-background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.macro-dashboard__title {
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+}
+
+.macro-dashboard__chart-container {
+  position: relative;
+  min-height: 400px;
+}
+
+.macro-dashboard__no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: var(--color-background-alt);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius-md);
+}
+
+.macro-dashboard__no-data p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .macro-dashboard {
+    padding: var(--spacing-md);
+  }
+  
+  .macro-dashboard__title {
+    font-size: var(--font-size-xl);
+  }
+  
+  .macro-dashboard__chart-container {
+    min-height: 300px;
+  }
+  
+  .macro-dashboard__no-data {
+    height: 300px;
+  }
+}

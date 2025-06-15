@@ -1,0 +1,17 @@
+{
+  "name": "postlaborsim-testing",
+  "version": "1.0.0",
+  "description": "End-to-end testing suite for PostLaborSim",
+  "main": "e2e-multiplayer-test.js",
+  "scripts": {
+    "test": "node e2e-multiplayer-test.js",
+    "test-with-server": "concurrently \"cd ../backend && npm start\" \"sleep 5 && npm test\"",
+    "load-test": "node load-test.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "socket.io-client": "^4.8.1",
+    "concurrently": "^8.2.0"
+  },
+  "devDependencies": {}
+}

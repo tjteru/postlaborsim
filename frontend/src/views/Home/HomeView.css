@@ -1,0 +1,209 @@
+@import '../../styles/variables.css';
+
+.home-view {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--color-background-alt) 0%, var(--color-background) 100%);
+  padding: var(--spacing-lg);
+}
+
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.home-title {
+  font-size: var(--font-size-3xl);
+  color: var(--color-text-primary);
+  margin: 0;
+  font-weight: 700;
+}
+
+.home-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-md) 0 0 0;
+}
+
+.role-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.role-card {
+  background: var(--color-background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.role-card h2 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+}
+
+.role-card p {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.role-features {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-md) 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.role-features li {
+  margin: var(--spacing-xs) 0;
+}
+
+.role-features li::before {
+  content: "✓ ";
+  color: var(--color-success);
+  font-weight: bold;
+}
+
+.role-button {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  transition: background-color var(--transition-base);
+  margin-top: var(--spacing-md);
+}
+
+.role-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.role-button-disabled {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-text-muted);
+  color: white;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  margin-top: var(--spacing-md);
+  opacity: 0.6;
+  cursor: not-allowed;
+  text-align: center;
+}
+
+.role-button-disabled small {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: normal;
+  margin-top: var(--spacing-xs);
+}
+
+.quick-start {
+  background: var(--color-background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.quick-start h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text-primary);
+}
+
+.quick-start ol {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  color: var(--color-text-secondary);
+}
+
+.quick-start li {
+  margin: var(--spacing-sm) 0;
+}
+
+.status-info {
+  background: var(--color-background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.status-info h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text-primary);
+}
+
+.status-checks {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: var(--color-background-alt);
+  border-radius: var(--border-radius-sm);
+}
+
+.status-label {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.status-value {
+  font-family: monospace;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.home-footer {
+  text-align: center;
+  padding-top: var(--spacing-lg);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.home-footer p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .home-view {
+    padding: var(--spacing-md);
+  }
+  
+  .role-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .home-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .status-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+  }
+}
