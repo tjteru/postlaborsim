@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Economic Impact Simulator</title>
+
+    <!-- External Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    
+    <!-- Modular Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <h1>AI Economic Impact Simulator</h1>
+                    <p style="color: var(--color-text-secondary);">Interactive Monte Carlo simulation of AI's economic impact with real-time parameter adjustment</p>
+                </div>
+                <a href="../index.html" style="display: inline-block; padding: 10px 20px; background: var(--color-primary); color: var(--color-btn-primary-text); text-decoration: none; border-radius: var(--radius-md); font-weight: var(--font-weight-semibold); white-space: nowrap;">
+                    ← Back to Main Simulation
+                </a>
+            </div>
+        </header>
+
+        <div class="app-container">
+            <!-- Sidebar Controls -->
+            <aside class="sidebar">
+                <h3>Simulation Parameters</h3>
+                
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            AI Adoption Rate
+                            <span class="param-info-icon" tabindex="0" data-tooltip="adoption-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="adoptionValue">23%</span>
+                    </div>
+                    <input type="range" class="slider" id="adoptionRate" min="5" max="80" step="1" value="23">
+                </div>
+
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            Annual TFP Growth Rate
+                            <span class="param-info-icon" tabindex="0" data-tooltip="tfp-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="tfpValue">0.25%</span>
+                    </div>
+                    <input type="range" class="slider" id="tfpRate" min="0.05" max="0.8" step="0.05" value="0.25">
+                </div>
+
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            Job Displacement Rate
+                            <span class="param-info-icon" tabindex="0" data-tooltip="displacement-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="displacementValue">15%</span>
+                    </div>
+                    <input type="range" class="slider" id="displacementRate" min="5" max="40" step="1" value="15">
+                </div>
+
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            Monte Carlo Iterations
+                            <span class="param-info-icon" tabindex="0" data-tooltip="iterations-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="iterationsValue">500</span>
+                    </div>
+                    <input type="range" class="slider" id="iterations" min="100" max="2000" step="100" value="500">
+                </div>
+
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            Productivity Multiplier
+                            <span class="param-info-icon" tabindex="0" data-tooltip="productivity-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="productivityValue">1.0x</span>
+                    </div>
+                    <input type="range" class="slider" id="productivityMultiplier" min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            Demand Elasticity
+                            <span class="param-info-icon" tabindex="0" data-tooltip="elasticity-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="elasticityValue">-0.8</span>
+                    </div>
+                    <input type="range" class="slider" id="demandElasticity" min="-1.5" max="-0.3" step="0.1" value="-0.8">
+                </div>
+
+                <div class="parameter-group">
+                    <div class="parameter-header">
+                        <label class="form-label">
+                            Time Horizon
+                            <span class="param-info-icon" tabindex="0" data-tooltip="horizon-tooltip">i</span>
+                        </label>
+                        <span class="parameter-value" id="horizonValue">10 years</span>
+                    </div>
+                    <input type="range" class="slider" id="timeHorizon" min="5" max="15" step="1" value="10">
+                </div>
+                
+                <div class="flex gap-8 mb-8">
+                    <button class="btn btn--primary btn--sm" id="runSimulation">Run Simulation</button>
+                    <button class="btn btn--outline btn--sm" id="resetDefaults">Reset Defaults</button>
+                </div>
+                
+                <div class="advanced-controls">
+                    <div class="collapsible-header" onclick="toggleAdvanced()">
+                        <span>Advanced Controls</span>
+                        <span id="advancedArrow">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="advancedContent">
+                        <div class="parameter-group">
+                            <label class="form-label">Random Seed</label>
+                            <input type="number" class="form-control" id="randomSeed" value="42">
+                        </div>
+                        <div class="parameter-group">
+                            <label class="form-label">Distribution Type</label>
+                            <select class="form-control" id="distributionType">
+                                <option value="normal">Normal</option>
+                                <option value="beta">Beta</option>
+                                <option value="triangular">Triangular</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                <!-- Summary Dashboard -->
+                <section class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-value" id="meanGDP">+18.72%</div>
+                        <div class="summary-label">Mean GDP Growth (10-year)</div>
+                        <div class="confidence-interval" id="gdpCI">95% CI: [5.12%, 32.32%]</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="meanEmployment">-9.79%</div>
+                        <div class="summary-label">Mean Employment Change (10-year)</div>
+                        <div class="confidence-interval" id="employmentCI">95% CI: [-20.14%, 0.56%]</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="probGDP">69.3%</div>
+                        <div class="summary-label">Probability of &gt;15% GDP Growth</div>
+                        <div class="confidence-interval" id="iterationCount">Based on 500 simulations</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="probEmployment">43.1%</div>
+                        <div class="summary-label">Probability of &gt;10% Job Loss</div>
+                        <div class="confidence-interval" id="riskMetric">Risk assessment</div>
+                    </div>
+                </section>
+
+                <!-- Visualization Tabs -->
+                <section class="tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="overview">Overview</button>
+                        <button class="tab-button" data-tab="charts">Charts</button>
+                        <button class="tab-button" data-tab="sectoral">Sectoral Analysis</button>
+                        <button class="tab-button" data-tab="scenarios">Scenario Comparison</button>
+                    </div>
+                </section>
+
+                <div class="tab-content">
+                    <div class="loading-indicator" id="loadingIndicator">
+                        <div class="spinner"></div>
+                        Running simulation...
+                    </div>
+                    
+                    <!-- Overview Tab -->
+                    <div class="tab-panel active" id="overview">
+                        <div class="risk-metrics">
+                            <div class="risk-metric">
+                                <div class="risk-value" id="annualGDPGrowth">1.87%</div>
+                                <div class="risk-label">Annual GDP Growth Rate</div>
+                            </div>
+                            <div class="risk-metric">
+                                <div class="risk-value" id="annualEmploymentChange">-0.98%</div>
+                                <div class="risk-label">Annual Employment Change</div>
+                            </div>
+                            <div class="risk-metric">
+                                <div class="risk-value" id="valueAtRisk">-12.3%</div>
+                                <div class="risk-label">Value at Risk (5%)</div>
+                            </div>
+                            <div class="risk-metric">
+                                <div class="risk-value" id="expectedShortfall">-18.7%</div>
+                                <div class="risk-label">Expected Shortfall</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Charts Tab -->
+                    <div class="tab-panel" id="charts">
+                        <div class="export-controls">
+                            <button class="btn btn--outline btn--sm" onclick="exportChart('png')">Export as PNG</button>
+                            <button class="btn btn--outline btn--sm" onclick="exportChart('csv')">Export Data (CSV)</button>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4>Time Series Analysis</h4>
+                            <canvas id="timeSeriesChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4>Distribution Analysis</h4>
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4>Scatter Plot: GDP vs Employment</h4>
+                            <canvas id="scatterChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Sectoral Analysis Tab -->
+                    <div class="tab-panel" id="sectoral">
+                        <div class="chart-container">
+                            <h4>Sectoral Impact Analysis</h4>
+                            <canvas id="sectoralChart"></canvas>
+                        </div>
+                        
+                        <div class="sectors-table">
+                            <div class="export-controls">
+                                <input type="text" class="form-control" placeholder="Filter sectors..." id="sectorFilter" style="max-width: 300px;">
+                                <button class="btn btn--outline btn--sm" onclick="exportSectorData()">Export Sectoral Data</button>
+                            </div>
+                            <table class="table" id="sectorsTable">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortTable(0)">Sector <span class="sort-indicator">↕</span></th>
+                                        <th onclick="sortTable(1)">AI Exposure (%) <span class="sort-indicator">↕</span></th>
+                                        <th onclick="sortTable(2)">Productivity Gain (%) <span class="sort-indicator">↕</span></th>
+                                        <th onclick="sortTable(3)">Employment Impact (%) <span class="sort-indicator">↕</span></th>
+                                        <th onclick="sortTable(4)">GDP Contribution (%) <span class="sort-indicator">↕</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sectorsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Comparison Tab -->
+                    <div class="tab-panel" id="scenarios">
+                        <div class="scenario-cards">
+                            <div class="scenario-card active" id="scenario1">
+                                <h4>Current Scenario</h4>
+                                <div class="result-row">
+                                    <span>GDP Growth:</span>
+                                    <span class="result-value" id="scenario1GDP">+18.72%</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Employment:</span>
+                                    <span class="result-value" id="scenario1Employment">-9.79%</span>
+                                </div>
+                            </div>
+                            <div class="scenario-card" id="scenario2">
+                                <h4>Conservative Scenario</h4>
+                                <div class="result-row">
+                                    <span>GDP Growth:</span>
+                                    <span class="result-value" id="scenario2GDP">+12.45%</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Employment:</span>
+                                    <span class="result-value" id="scenario2Employment">-6.23%</span>
+                                </div>
+                            </div>
+                            <div class="scenario-card" id="scenario3">
+                                <h4>Aggressive Scenario</h4>
+                                <div class="result-row">
+                                    <span>GDP Growth:</span>
+                                    <span class="result-value" id="scenario3GDP">+28.91%</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Employment:</span>
+                                    <span class="result-value" id="scenario3Employment">-15.67%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4>Scenario Comparison Chart</h4>
+                            <canvas id="scenarioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Methodology Section -->
+                <section class="methodology">
+                    <div class="methodology-header" onclick="toggleMethodology()">
+                        <h3>Methodology &amp; Assumptions</h3>
+                        <span class="arrow-icon" id="methodologyArrow">▼</span>
+                    </div>
+                    <div class="methodology-content" id="methodologyContent">
+                        <div class="methodology-section">
+                            <h4>Monte Carlo Approach</h4>
+                            <p>This simulation uses Monte Carlo methods to model the economic impact of AI adoption across sectors. The model incorporates stochastic variables for adoption rates, productivity gains, and employment displacement effects.</p>
+                        </div>
+                        
+                        <div class="methodology-section">
+                            <h4>Key Model Equations</h4>
+                            <ul class="methodology-list">
+                                <li><strong>GDP Growth:</strong> ΔY = α × A × P × (1 + ε × L)</li>
+                                <li><strong>Employment Change:</strong> ΔL = -D × E × A × (1 + η)</li>
+                                <li><strong>Productivity Impact:</strong> P = base_productivity × multiplier × exposure</li>
+                                <li><strong>Sectoral Aggregation:</strong> Total = Σ(sector_weight × sector_impact)</li>
+                            </ul>
+                        </div>
+
+                        <div class="methodology-section">
+                            <h4>Parameter Definitions</h4>
+                            <ul class="methodology-list">
+                                <li><strong>A:</strong> AI Adoption Rate (5%-80%)</li>
+                                <li><strong>D:</strong> Job Displacement Rate (5%-40%)</li>
+                                <li><strong>P:</strong> Productivity Multiplier (0.5x-2.0x)</li>
+                                <li><strong>ε:</strong> Demand Elasticity (-1.5 to -0.3)</li>
+                                <li><strong>E:</strong> Sector AI Exposure (sector-specific)</li>
+                                <li><strong>η:</strong> Random shock (normally distributed)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+
+    <!-- Tooltip Elements (positioned via JavaScript) -->
+    <div id="adoption-tooltip" class="param-info-tooltip">
+        <strong>AI Adoption Rate</strong>
+        <p>Percentage of workforce tasks that will be affected by AI over the time horizon. Higher values simulate rapid AI integration across the economy.</p>
+        <p><em>Range: 5% (minimal adoption) to 80% (widespread transformation)</em></p>
+    </div>
+
+    <div id="tfp-tooltip" class="param-info-tooltip">
+        <strong>Annual TFP Growth Rate</strong>
+        <p>Total Factor Productivity measures how efficiently the economy converts inputs (labor, capital) into outputs. AI can significantly boost TFP through automation and optimization.</p>
+        <p><em>Range: 0.05% (modest) to 0.8% (transformative)</em></p>
+    </div>
+
+    <div id="displacement-tooltip" class="param-info-tooltip">
+        <strong>Job Displacement Rate</strong>
+        <p>Percentage of jobs directly lost to AI automation. The model accounts for both job losses and new job creation from economic growth and emerging roles.</p>
+        <p><em>Range: 5% (minimal disruption) to 40% (severe displacement)</em></p>
+    </div>
+
+    <div id="iterations-tooltip" class="param-info-tooltip">
+        <strong>Monte Carlo Iterations</strong>
+        <p>Number of simulation runs to perform. More iterations provide more accurate statistical estimates but take longer to compute. 500-1000 iterations typically provide reliable results.</p>
+        <p><em>Range: 100 (quick estimate) to 2,000 (high precision)</em></p>
+    </div>
+
+    <div id="productivity-tooltip" class="param-info-tooltip">
+        <strong>Productivity Multiplier</strong>
+        <p>Amplification factor for AI-driven productivity gains in each sector. Values above 1.0 indicate AI enhances worker output beyond base expectations.</p>
+        <p><em>Range: 0.5x (conservative) to 2.0x (highly optimistic)</em></p>
+    </div>
+
+    <div id="elasticity-tooltip" class="param-info-tooltip">
+        <strong>Demand Elasticity</strong>
+        <p>Consumer responsiveness to price changes from productivity gains. More negative values mean consumers are more sensitive to prices, affecting how much GDP growth translates from productivity improvements.</p>
+        <p><em>Range: -1.5 (highly elastic) to -0.3 (inelastic)</em></p>
+    </div>
+
+    <div id="horizon-tooltip" class="param-info-tooltip">
+        <strong>Time Horizon</strong>
+        <p>Number of years to project into the future. Longer horizons allow compounding effects but introduce more uncertainty. Results show cumulative impact over this period.</p>
+        <p><em>Range: 5 years (near-term) to 15 years (long-term)</em></p>
+    </div>
+
+    <!-- Modular JavaScript -->
+    <script src="simulator.js"></script>
+    <script src="ui.js"></script>
+    <script src="charts.js"></script>
+    <script src="initialization.js"></script>
+</body>
+</html>
